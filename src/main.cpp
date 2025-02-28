@@ -16,10 +16,18 @@ void setup() {
     ; // Wait for the serial port to connect
 
   }
-
-  // Send initial message
-  Serial.println("GPS communication started!");
+   Serial.println("Bidirectional communication with ESP32 initialized!");
 }
+
+
+
+
+
+
+
+
+
+
 
 void loop() {
   // Read from GPS and send it to Serial Monitor
