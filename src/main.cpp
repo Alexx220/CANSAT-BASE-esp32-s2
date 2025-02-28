@@ -1,18 +1,24 @@
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
+// Define pin 15 as the LED pin
+const int ledPin = 15;
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  // Initialize pin 15 as an output
+  pinMode(ledPin, OUTPUT);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
+  // Turn the LED on (HIGH is the voltage level)
+  digitalWrite(ledPin, HIGH);
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  // Wait for one second (1000 milliseconds)
+  delay(100);
+
+  // Turn the LED off by making the voltage LOW
+  digitalWrite(ledPin, LOW);
+
+  // Wait for one second (1000 milliseconds)
+  delay(100);
 }
+// blink shit 
