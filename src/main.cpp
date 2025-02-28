@@ -14,6 +14,7 @@ void setup() {
   // Wait for the serial to initialize
   while (!Serial) {
     ; // Wait for the serial port to connect
+
   }
 
   // Send initial message
