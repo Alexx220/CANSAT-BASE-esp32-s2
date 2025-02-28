@@ -17,6 +17,7 @@ void setup() {
 
 void loop() {
   processGPS();  // Read and process the GPS data
+  sendvars2PC();
   delay(2000);  // Wait a bit before reading again
 }     
 
@@ -26,13 +27,19 @@ void loop() {
 
 
 
-void updatevars(){
-
-
-  
+void sendvars2PC(){
+if (Serial.available() > 0) {
+// saud feel free to structure the data sent as you like, as this is all BASE STATION dictates, not the pc you can just pass everything from the recivever in a pass through manner 
+}
 }
 
 
+
+
+
+
+
+////////////////////////////
 void setupGPS() {
 
   GPS_SERIAL.begin(GPS_BAUD);  // Start serial communication with the GPS module
