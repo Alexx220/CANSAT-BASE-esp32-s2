@@ -12,9 +12,7 @@ TinyGPSPlus gps;
 void setupGPS() {
 
   GPS_SERIAL.begin(GPS_BAUD);  // Start serial communication with the GPS module
-  while (!GPS_SERIAL) {
-    ; // Wait for GPS module to be ready
-  }
+  while (!GPS_SERIAL) {} // Wait for GPS module to be ready
   Serial.println("GPS initialized.");
 
 }
@@ -24,47 +22,57 @@ void processGPS() {
   while (GPS_SERIAL.available() > 0) {
     gps.encode(GPS_SERIAL.read()); // Feed GPS data to the TinyGPS++ object
 
-    // Check if there's a new GPS fix (valid location)
-    if (gps.location.isUpdated()) {
-      // Print out the GPS data (latitude, longitude, altitude)
-      Serial.print("Latitude= "); 
-      Serial.print(gps.location.lat(), 6);  // Prints with 6 decimals
-      Serial.print(" Longitude= "); 
-      Serial.print(gps.location.lng(), 6);  // Prints with 6 decimals
-      Serial.print(" Altitude= "); 
-      Serial.println(gps.altitude.meters()); // Prints altitude in meters
-    }
+    // // Check if there's a new GPS fix (valid location)
+    // if (gps.location.isUpdated()) {
+    //   // Print out the GPS data (latitude, longitude, altitude)
+    //   Serial.print("Latitude= "); 
+    //   Serial.print(gps.location.lat(), 6);  // Prints with 6 decimals
+    //   Serial.print("Longitude= "); 
+    //   Serial.print(gps.location.lng(), 6);  // Prints with 6 decimals
+    //   Serial.print("Altitude= "); 
+    //   Serial.println(gps.altitude.meters()); // Prints altitude in meters
+    // }
 
-    // You can add more data like speed, course, date, time, etc.
-    if (gps.speed.isUpdated()) {
-      Serial.print("Speed= ");
-      Serial.println(gps.speed.kmph()); // Speed in km/h
-    }
+    // // You can add more data like speed, course, date, time, etc.
+    // if (gps.speed.isUpdated()) {
+    //   Serial.print("Speed= ");
+    //   Serial.println(gps.speed.kmph()); // Speed in km/h
+    // }
 
-    if (gps.date.isUpdated()) {
-      Serial.print("Date= ");
-      Serial.print(gps.date.day());
-      Serial.print("/");
-      Serial.print(gps.date.month());
-      Serial.print("/");
-      Serial.println(gps.date.year());
-    }
+    // if (gps.date.isUpdated()) {
+    //   Serial.print("Date= ");
+    //   Serial.print(gps.date.day());
+    //   Serial.print("/");
+    //   Serial.print(gps.date.month());
+    //   Serial.print("/");
+    //   Serial.println(gps.date.year());
+    // }
 
-    if (gps.time.isUpdated()) {
-      Serial.print("Time= ");
-      Serial.print(gps.time.hour());
-      Serial.print(":");
-      Serial.print(gps.time.minute());
-      Serial.print(":");
-      Serial.print(gps.time.second());
-      Serial.println();
-    }
+    // if (gps.time.isUpdated()) {
+    //   Serial.print("Time= ");
+    //   Serial.print(gps.time.hour());
+    //   Serial.print(":");
+    //   Serial.print(gps.time.minute());
+    //   Serial.print(":");
+    //   Serial.print(gps.time.second());
+    //   Serial.println();
+    // }
   }
 }
 
 void sendvars2PC(){
   if (Serial.available() > 0) {
-  // saud feel free to structure the data sent as you like, as this is all BASE STATION dictates, not the pc you can just pass everything from the recivever in a pass through manner 
+    // structure the data sent as you like, as this is all BASE STATION dictates, not the pc you can just pass everything from the reciever in a pass through manner
+    // sending CANSAT info as json data
+    Serial.print(
+      "{\"Latitude\":"
+      + String(gps.location.lat())
+      + ",\"Longitude\":"
+      + String(gps.location.lng())
+      + ",\"Altitude\":"
+      + String(gps.altitude.meters())
+      + "}"
+    );
   }
 }
 
@@ -75,7 +83,7 @@ void setup() {
 
 
 void loop() {
-  processGPS();  // Read and process the GPS data
+//  processGPS();  // Read and process the GPS data
   sendvars2PC();
   delay(2000);  // Wait a bit before reading again
 }
