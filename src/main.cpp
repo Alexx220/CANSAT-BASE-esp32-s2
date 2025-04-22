@@ -39,9 +39,6 @@
 
 #define DHTPIN 18
 
-// For JSON fomatting
-JsonDocument doc;
-
 // For tracking acceleration in altitude
 double last_altitude = 0.0;
 double current_altitude = 0.0;
@@ -52,6 +49,9 @@ bool sensors_active = false;
 
 // Storing when the air quality sensor was last read
 long last_air_quality_read = 0;
+
+// For JSON fomatting
+JsonDocument doc;
 
 // Define the serial port for GPS communication (e.g., Serial1, Serial2)
 // You can change to Serial2 or another UART if necessary
@@ -188,12 +188,12 @@ void setup() {
 void loop() { // Reading and sending all sensor data
   // sending CANSAT info as json data
   bool just_updated = false;
-  while (gps_serial.available() > 0) {
+  while (0 < gps_serial.available()) {
     gps.encode(gps_serial.read()); // Feed GPS data to the TinyGPS++ object
 
     // Check if there's a new GPS fix (valid location)
     if (gps.location.isValid() && gps.location.isUpdated()) {
-      just_updated = false;
+      just_updated = true;
       long current_time = millis();
 
       last_altitude = current_altitude;
