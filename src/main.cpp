@@ -143,8 +143,10 @@ void setup_GPS() {
   last_altitude_updated = millis();
 }
 
-void send_data(JsonDocument doc, char* json_chars, uint8_t num_bytes) { // Sending each sensors' data seperately to prevent hitting the 252 byte limit
-  serializeJson(doc, json_chars, num_bytes);
+void send_data(JsonDocument doc) { // Sending each sensors' data seperately to prevent hitting the 252 byte limit
+  char json_chars[250];
+
+  uint8_t num_bytes = serializeJson(doc, json_chars, 250);
 
   // The RFM 9x only has a 252 byte buffer (keep this in mind)
   data_transmitter.sendtoWait(((uint8_t*)json_chars), num_bytes, TO_address);
@@ -185,9 +187,6 @@ void setup() {
 
 void loop() { // Reading and sending all sensor data
   // sending CANSAT info as json data
-  char* json_chars;
-  uint8_t num_bytes;
-
   bool just_updated = false;
   while (gps_serial.available() > 0) {
     gps.encode(gps_serial.read()); // Feed GPS data to the TinyGPS++ object
@@ -216,7 +215,7 @@ void loop() { // Reading and sending all sensor data
     doc["GPS"]["latitude"] = gps.location.lat(); // Degrees GPS information
     doc["GPS"]["longitude"] = gps.location.lng(); // Degrees
     doc["GPS"]["altitude"] = current_altitude; // Metres
-    send_data(doc, json_chars, num_bytes);
+    send_data(doc);
   }
 
   if (sensors_active) {
@@ -229,17 +228,17 @@ void loop() { // Reading and sending all sensor data
       doc["DHT"]["temp"] = t;  // Temp in degrees celcius
       doc["DHT"]["humidity"] = h; // Humidity as percent
       doc["DHT"]["heat_index"] = dht.computeHeatIndex(t, h, false);
-      send_data(doc, json_chars, num_bytes);
+      send_data(doc);
 
       doc["BMP"]["temp"] = bmp.readTemperature();  // Temp in degrees celcius BMP280 readings
       doc["BMP"]["pressure"] = bmp.readPressure();  // Atmospheric pressure in Pascals
-      send_data(doc, json_chars, num_bytes);
+      send_data(doc);
 
       // If it has taken at least one second, read the air quality again
       if (1000 <= (current_time - last_air_quality_read)) {
         doc["SGP"]["air_quality"] = air_quality.getVOCindex(h, t);  // VOC index  SGP40 readings
         last_air_quality_read = current_time;
-        send_data(doc, json_chars, num_bytes);
+        send_data(doc);
       }
     }
 
@@ -257,7 +256,7 @@ void loop() { // Reading and sending all sensor data
       doc["GY"]["gyro_x"] = gyro.getGyroX();
       doc["GY"]["gyro_y"] = gyro.getGyroY();
       doc["GY"]["gyro_z"] = gyro.getGyroZ();
-      send_data(doc, json_chars, num_bytes);
+      send_data(doc);
     }
 
     if (ISM_sensor.checkStatus()) { // ism330dhcx readings
@@ -271,7 +270,7 @@ void loop() { // Reading and sending all sensor data
       doc["ISM"]["gyro_x"] = gyro_data.xData;
       doc["ISM"]["gyro_y"] = gyro_data.yData;
       doc["ISM"]["gyro_z"] = gyro_data.zData;
-      send_data(doc, json_chars, num_bytes);
+      send_data(doc);
     }
 
     if (magnometer.isConnected()) {
@@ -279,7 +278,7 @@ void loop() { // Reading and sending all sensor data
       doc["MMC"]["x"] = (((double)magnometer.getMeasurementX()) - 131072.0) / 131072.0;
       doc["MMC"]["y"] = (((double)magnometer.getMeasurementY()) - 131072.0) / 131072.0;
       doc["MMC"]["z"] = (((double)magnometer.getMeasurementZ()) - 131072.0) / 131072.0;
-      send_data(doc, json_chars, num_bytes);
+      send_data(doc);
     }
 
     uint16_t data_ready;
@@ -304,7 +303,7 @@ void loop() { // Reading and sending all sensor data
 
         doc["SPS"]["typical_particle_size"] = measurements.typical_particle_size;
 
-        send_data(doc, json_chars, num_bytes);
+        send_data(doc);
       }
     }
   }
